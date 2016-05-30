@@ -14,9 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:tabGravity="center"
-        app:tabIndicatorColor="#FF00FF00"
-        app:tabSelectedTextColor="#FF00FF00"
-        app:tabTextColor="#FF000000" />
+        app:tabIndicatorColor="@android:color/holo_red_light"
+        app:tabIndicatorHeight="5dp"
+        app:tabSelectedTextColor="@android:color/black"
+        app:tabTextColor="@android:color/darker_gray" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/vp_view"
