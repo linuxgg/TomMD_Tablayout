@@ -1,19 +1,23 @@
 package materialdesign.example.linuxgg.com.tommaterialdesign;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -21,6 +25,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import materialdesign.example.linuxgg.com.tommaterialdesign.fragments.BaseFragment;
+import materialdesign.example.linuxgg.com.tommaterialdesign.fragments.SubFragment;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -49,23 +56,20 @@ public class BaseActivity extends AppCompatActivity {
 
 
     private TabLayout mTablayout;
-    private Map<String, View> mViewMap = new HashMap<String, View>();
+    private Map<String, BaseFragment> mFragmentMap = new HashMap<String, BaseFragment>();
 
     private void initView() {
         vp = (ViewPager) findViewById(R.id.vp_view);
         mTablayout = (TabLayout) findViewById(R.id.tabs);
 
-        for (int i = 0; i < 900; i++) { //玩儿的就是心跳。。。。
-            mViewMap.put(i + "", LayoutInflater.from(this).inflate(R.layout.sub_layout, null));
+        for (int i = 0; i < 10; i++) { //玩儿的就是心跳。。。。
+            mFragmentMap.put(i + "", new SubFragment());
         }
 
 
         mTablayout.setTabMode(TabLayout.MODE_SCROLLABLE); //用滑动的方式展示页面，展示的个数，根据title定义
 //        mTablayout.setTabMode(TabLayout.MODE_FIXED);//将所有tab都显示出来
 
-        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(mViewMap);
-        vp.setAdapter(myPagerAdapter);
-        mTablayout.setupWithViewPager(vp);
 
         imgList.add("http://i.imgur.com/DvpvklR.png");
         imgList.add("http://g.hiphotos.baidu.com/image/h%3D200/sign=406968d52f381f3081198aa999004c67/242dd42a2834349bdd7d3468ceea15ce37d3bee0.jpg");
@@ -73,6 +77,30 @@ public class BaseActivity extends AppCompatActivity {
         imgList.add("http://image.tuwang.com/Nature/FengGuang-1600-1200/FengGuang_pic_abx@DaTuKu.org.jpg");
         imgList.add("http://image.tianjimedia.com/uploadImages/2011/286/8X76S7XD89VU.jpg");
 
+
+        MyFragmentAdapter myPagerAdapter = new MyFragmentAdapter(getSupportFragmentManager(), mFragmentMap);
+        vp.setAdapter(myPagerAdapter);
+        mTablayout.setupWithViewPager(vp);
+
+        vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                mFragmentMap.get(position + "").setText("text::" + position);
+                Picasso.with(getApplicationContext()).load(imgList.get(position % imgList.size()))
+                        .into(mFragmentMap.get(position + "").getPic());
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mFragmentMap.get(position + "").setText("text::" + position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
 
     }
 
@@ -89,8 +117,6 @@ public class BaseActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -100,48 +126,28 @@ public class BaseActivity extends AppCompatActivity {
 
 //========================================================
 
-    class MyPagerAdapter extends PagerAdapter {
-        private Map<String, View> mViewList;
+    class MyFragmentAdapter extends FragmentPagerAdapter {
+        Map<String, BaseFragment> mFragmentMap;
 
-        public MyPagerAdapter(Map<String, View> mViewList) {
-            this.mViewList = mViewList;
+        public MyFragmentAdapter(FragmentManager fm, Map<String, BaseFragment> mFragmentMap) {
+            super(fm);
+            this.mFragmentMap = mFragmentMap;
+        }
+
+        @Override
+        public android.support.v4.app.Fragment getItem(int position) {
+            return mFragmentMap.get(position + "");
         }
 
         @Override
         public int getCount() {
-            return mViewList.size();
+            return mFragmentMap.size();
         }
 
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View v = mViewList.get(position + "");
-            container.addView(v);
-            try {
-                Picasso p = Picasso.with(getApplicationContext());
-                p.setLoggingEnabled(BuildConfig.DEBUG);
-                p.load(imgList.get(position % imgList.size())).into((ImageView) v.findViewById(R.id.pic));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return mViewList.get(position + "");
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            Picasso.with(getApplicationContext()).cancelRequest((ImageView) mViewList.get(position + "").findViewById(R.id.pic));
-            container.removeView(mViewList.get(position + ""));
-        }
 
         @Override
         public CharSequence getPageTitle(int position) {
-
-            return "Title_" + position;
+            return "Title" + position;
         }
     }
-
 }

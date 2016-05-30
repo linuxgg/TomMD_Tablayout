@@ -16,11 +16,16 @@
         app:tabGravity="center"
         app:tabIndicatorColor="@color/colorPrimary"
         app:tabIndicatorHeight="5dp"
+
         app:tabMinWidth="60dp"
         app:tabSelectedTextColor="@android:color/black"
         app:tabTextColor="@android:color/darker_gray">
         <!--  tabMinWidth 如果设置的比较大，会自动填充宽度-->
 
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent" />
     </android.support.design.widget.TabLayout>
 
     <android.support.v4.view.ViewPager
