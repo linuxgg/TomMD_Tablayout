@@ -17,5 +17,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="TextAppearance.Design.Tab.Mine" parent="TextAppearance.Design.Tab">
+        <item name="android:background">@color/c11ff33</item>
+    </style>
+
 
 </resources>
