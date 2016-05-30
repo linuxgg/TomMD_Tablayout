@@ -19,7 +19,9 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -44,48 +46,27 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private ViewPager vp;
-    private View view1, view2, view3, view4, view5;
-    private List<View> mViewList = new ArrayList<>();
     private List<String> imgList = new ArrayList<>();
 
 
-    private LayoutInflater mInflater;
-    private List<String> mTitleList = new ArrayList<>();
     private TabLayout mTablayout;
+    private Map<String, View> mViewMap = new HashMap<String, View>();
 
     private void initView() {
         vp = (ViewPager) findViewById(R.id.vp_view);
         mTablayout = (TabLayout) findViewById(R.id.tabs);
-        mInflater = LayoutInflater.from(this);
-        view1 = mInflater.inflate(R.layout.sub_layout, null);
-        view2 = mInflater.inflate(R.layout.sub_layout, null);
-        view3 = mInflater.inflate(R.layout.sub_layout, null);
-        view4 = mInflater.inflate(R.layout.sub_layout, null);
-        view5 = mInflater.inflate(R.layout.sub_layout, null);
 
-
-        mViewList.add(view1);
-        mViewList.add(view2);
-        mViewList.add(view3);
-        mViewList.add(view4);
-        mViewList.add(view5);
-
-        mTitleList.add("1sssss");
-        mTitleList.add("2sss");
-        mTitleList.add("3dsf");
-        mTitleList.add("4asf");
-        mTitleList.add("5d");
-
-//        mTablayout.setTabMode(TabLayout.MODE_FIXED);
-        mTablayout.setTabMode(TabLayout.MODE_FIXED);
-        for (String i : mTitleList) {
-            mTablayout.addTab(mTablayout.newTab().setText(i));
+        for (int i = 0; i < 100; i++) { //玩儿的就是心跳。。。。
+            mViewMap.put(i + "", LayoutInflater.from(this).inflate(R.layout.sub_layout, null));
         }
 
-        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(mViewList);
+
+        mTablayout.setTabMode(TabLayout.MODE_SCROLLABLE); //用滑动的方式展示页面，展示的个数，根据title定义
+//        mTablayout.setTabMode(TabLayout.MODE_FIXED);//将所有tab都显示出来
+
+        MyPagerAdapter myPagerAdapter = new MyPagerAdapter(mViewMap);
         vp.setAdapter(myPagerAdapter);
         mTablayout.setupWithViewPager(vp);
-        mTablayout.setTabsFromPagerAdapter(myPagerAdapter);
 
         imgList.add("http://i.imgur.com/DvpvklR.png");
         imgList.add("http://g.hiphotos.baidu.com/image/h%3D200/sign=406968d52f381f3081198aa999004c67/242dd42a2834349bdd7d3468ceea15ce37d3bee0.jpg");
@@ -94,50 +75,6 @@ public class BaseActivity extends AppCompatActivity {
         imgList.add("http://image.tianjimedia.com/uploadImages/2011/286/8X76S7XD89VU.jpg");
 
 
-    }
-
-    class MyPagerAdapter extends PagerAdapter {
-        private List<View> mViewList;
-
-        public MyPagerAdapter(List<View> mViewList) {
-            this.mViewList = mViewList;
-        }
-
-        @Override
-        public int getCount() {
-            return mViewList.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            container.addView(mViewList.get(position));
-            Log.d("adfaf", "start to load img");
-            try {
-
-                Picasso p = Picasso.with(getApplicationContext());
-                p.setLoggingEnabled(BuildConfig.DEBUG);
-                p.load(imgList.get(position)).into((ImageView) mViewList.get(position).findViewById(R.id.pic));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return mViewList.get(position);
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-
-            container.removeView(mViewList.get(position));
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mTitleList.get(position);
-        }
     }
 
     @Override
@@ -161,4 +98,51 @@ public class BaseActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+//========================================================
+
+    class MyPagerAdapter extends PagerAdapter {
+        private Map<String, View> mViewList;
+
+        public MyPagerAdapter(Map<String, View> mViewList) {
+            this.mViewList = mViewList;
+        }
+
+        @Override
+        public int getCount() {
+            return mViewList.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            View v = mViewList.get(position + "");
+            container.addView(v);
+            try {
+                Picasso p = Picasso.with(getApplicationContext());
+                p.setLoggingEnabled(BuildConfig.DEBUG);
+                p.load(imgList.get(position % imgList.size())).into((ImageView) v.findViewById(R.id.pic));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return mViewList.get(position + "");
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            Picasso.with(getApplicationContext()).cancelRequest((ImageView) mViewList.get(position + "").findViewById(R.id.pic));
+            container.removeView(mViewList.get(position + ""));
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+
+            return "Title_" + position;
+        }
+    }
+
 }
