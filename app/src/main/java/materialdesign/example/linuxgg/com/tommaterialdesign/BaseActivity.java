@@ -8,7 +8,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -56,7 +55,7 @@ public class BaseActivity extends AppCompatActivity {
         vp = (ViewPager) findViewById(R.id.vp_view);
         mTablayout = (TabLayout) findViewById(R.id.tabs);
 
-        for (int i = 0; i < 100; i++) { //玩儿的就是心跳。。。。
+        for (int i = 0; i < 900; i++) { //玩儿的就是心跳。。。。
             mViewMap.put(i + "", LayoutInflater.from(this).inflate(R.layout.sub_layout, null));
         }
 
